@@ -1,14 +1,10 @@
-// Converts a matrix into echelon form using Gaussian Elimination
-
 #include <iostream>
 #include <vector>
 #include <iomanip>
-#include <limits.h>
 #include <fstream>
-#include <string>
-#include <numbers>
-
-#define FLOAT_MIN -80000000.0
+#include <cmath>
+// Flag for empty row
+#define EMPTY -80000000
 
 void printMatrix(std::vector<std::vector<float>> &matrix){
     int rows = matrix.size();
@@ -58,41 +54,53 @@ void echelonForm(std::vector<std::vector<float>> &matrix){
 
     int i, j;
     for (int i = 0; i < row; i++){
-        float pivot = FLOAT_MIN;
+        int firstZero = 0;
+        float pivot = EMPTY;
 
         for (int j = 0; j < col; j++){
             // Find pivot
-            if (matrix[i][j] != 0){
+            if (i == 0 && j == 0 && matrix[i][j] == 0){
+                firstZero = 1;
+                break;
+            }
+
+            else if (matrix[i][j] != 0){
                 pivot = j;
                 break;
             }
         }
 
-        // If no pivot is found in this row, move to the end of the matrix
-        if (pivot == FLOAT_MIN){
+        // If no pivot is found in this row or the first entry in the matrix is zero, 
+        // move to the end of the matrix
+        if (pivot == EMPTY || firstZero){
             matrix.push_back(matrix[i]);
             matrix.erase(matrix.begin() + i);
+            // Decrement i to get back to the current row 
+            i--; 
+
+            continue;
         }
 
         // Make all columns under the pivot = 0
-        else {
-            // Keep track of the current row and the row of the pivot
-            int loc = i;
-            int cur = i+1;
+        // Keep track of the current row and the row of the pivot
+        int loc = i;
+        int cur = i+1;
 
-            while (cur < row){
-                // x is the value to use in the row replacement operation
+        while (cur < row){
+            // x is the value to use in the row replacement operation
+            if (matrix[cur][pivot] != 0){
                 float x = (matrix[cur][pivot] / matrix[loc][pivot]);
 
-                for(int i = 0; i < col; i++)
+                for(int i = 0; i < col; i++){
                     matrix[cur][i] = matrix[cur][i] - (x * matrix[loc][i]);
-
-                cur++;
+                }
             }
+            
+            cur++;
         }
-    }
 
-    printMatrix(matrix);
+        printMatrix(matrix);
+    }
 }
 
 void reducedForm(std::vector<std::vector<float>> &matrix){
@@ -103,7 +111,7 @@ void reducedForm(std::vector<std::vector<float>> &matrix){
 
     int i, j;
     for (int i = row-1; i >= 0; i--){
-        float pivot = FLOAT_MIN;
+        float pivot = EMPTY;
 
         for (int j = 0; j < col-2; j++){
             // Find pivot
@@ -114,17 +122,25 @@ void reducedForm(std::vector<std::vector<float>> &matrix){
         }
 
         // If no pivot is found in this row, move on 
-        if (pivot == FLOAT_MIN){
+        if (pivot == EMPTY){
             continue;
         }
 
         else if (i != 0) {
+            std::cout << "pivot:" << pivot << "\n";
             // Keep track of the current row and the row of the pivot
             int loc = i;
             int cur = i-1;
+            float d;
             
             // d is the scalar used to make the pivot 1 (which is 1/pivot)
-            float d = matrix[loc][pivot];
+            if (matrix[loc][pivot] < 0){
+                d = matrix[loc][pivot];
+            }
+            else {
+                d = abs(matrix[loc][pivot]);
+            }
+
             float x = matrix[cur][pivot];
 
             // Divide every value in the same row by the scalar
@@ -145,7 +161,7 @@ void reducedForm(std::vector<std::vector<float>> &matrix){
 int main(){
     std::cout << "Welcome to the Matrix Equation Solver!\n";
         
-    std::ifstream input("m34.txt", std::ios_base::in);
+    std::ifstream input("test cases/7.txt", std::ios_base::in);
     if (!input.is_open()){
         std::cout << "Error opening file.";
         return 1;
