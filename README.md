@@ -7,13 +7,12 @@ TESTING
   following format: (samples under test cases/)
 
 matrix.txt
-
-Number of rows
-Number of columns
-Entries of row 1
-Entries of row 2
-...
-Entries of row n
+- Number of rows
+- Number of columns
+- Entries of row 1
+- Entries of row 2
+- ...
+- Entries of row n
 
 
 EXECUTION
