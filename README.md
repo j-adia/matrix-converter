@@ -4,16 +4,7 @@ ABOUT
 
 TESTING
 - To run your own test cases, create a .txt file with the 
-  following format: (samples under test cases/)
-
-matrix.txt
-- Number of rows
-- Number of columns
-- Entries of row 1
-- Entries of row 2
-- ...
-- Entries of row n
-
+  proper format: (samples under test cases/)
 
 EXECUTION
 - To run code, enter into the terminal:
