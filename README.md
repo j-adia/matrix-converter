@@ -19,4 +19,4 @@ Entries of row n
 EXECUTION
 - To run code, enter into the terminal:
 g++ matrix.cpp -o matrix
-./matrix
+./matrix "filename.txt"
