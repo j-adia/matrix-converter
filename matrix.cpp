@@ -10,6 +10,7 @@
 void printMatrix(std::vector<std::vector<float>> &matrix);
 void echelonForm(std::vector<std::vector<float>> &matrix);
 void reducedForm(std::vector<std::vector<float>> &matrix);
+void findVariables(std::vector<std::vector<float>> &matrix);
 
 int main(int argc, char * argv[]){
     if (argc < 1){
@@ -69,7 +70,7 @@ void printMatrix(std::vector<std::vector<float>> &matrix){
 }
 
 void echelonForm(std::vector<std::vector<float>> &matrix){
-    std::cout << "\n echelon form:\n";
+    std::cout << "\nechelon form:\n";
     int row, col;
     row = matrix.size();
     col = matrix[0].size();
@@ -113,7 +114,8 @@ void echelonForm(std::vector<std::vector<float>> &matrix){
                 for(int i = 0; i < col; i++){
                     matrix[curRow][i] = matrix[curRow][i] - (x * matrix[loc][i]);
                 }
-            }  
+            }
+            std::cout << "flag ";
             curRow++;
         }
     }
