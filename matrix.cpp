@@ -37,8 +37,9 @@ int main(int argc, char * argv[]){
         while(input >> val){
             equation.push_back(val);
 
-            if (input.peek() == '\n')
+            if (input.peek() == '\n'){
                 break;
+            }
         }
 
         equationSet.push_back(equation);
@@ -57,9 +58,12 @@ void printMatrix(std::vector<std::vector<float>> &matrix){
     int cols = matrix[0].size(); 
     
     for (int i = 0; i < rows; i++){
-        for (int j = 0; j < cols; j++)
-            std::cout << std::fixed << std::setprecision(2) << std::setw(9)  << std::right << matrix[i][j];
+        for (int j = 0; j < cols; j++){
+            if (matrix[i][j] == -0) // make -0 print 0 (number formatting preference)
+                matrix[i][j] = 0;
 
+            std::cout << std::fixed << std::setprecision(2) << std::setw(9)  << std::right << matrix[i][j];
+        }
         std::cout << "\n";
     }
 }
@@ -97,20 +101,20 @@ void echelonForm(std::vector<std::vector<float>> &matrix){
             continue;
         }
         // make all columns under the pivot = 0
-        // keep track of the current row and the row of the pivot
+        // keep track of the curRowrent row and the row of the pivot
         int loc = i;
-        int cur = i+1;
+        int curRow = i+1;
 
-        while (cur < row){
+        while (curRow < row){
             // x is the value to use in the row replacement operation
-            if (matrix[cur][pivot] != 0){
-                float x = (matrix[cur][pivot] / matrix[loc][pivot]);
+            if (matrix[curRow][pivot] != 0){
+                float x = (matrix[curRow][pivot] / matrix[loc][pivot]);
 
                 for(int i = 0; i < col; i++){
-                    matrix[cur][i] = matrix[cur][i] - (x * matrix[loc][i]);
+                    matrix[curRow][i] = matrix[curRow][i] - (x * matrix[loc][i]);
                 }
             }  
-            cur++;
+            curRow++;
         }
     }
     printMatrix(matrix);
@@ -138,32 +142,23 @@ void reducedForm(std::vector<std::vector<float>> &matrix){
             continue;
         }
 
-        int loc = i;
-        int cur = i-1;
-        float d;
-        
-        // d is the scalar used to make the pivot 1 (which is 1/pivot)
-        if (matrix[loc][pivot] < 0){
-            d = matrix[loc][pivot];
-        }
-        else {
-            d = abs(matrix[loc][pivot]);
-        }
+        int pivRow = i;
+        int curRow = i-1;
+        float scalar = 1/(matrix[pivRow][pivot]);
 
-        // divide every value in the same row by the scalar
+        // multiply every value in the same row as the pivot by the scalar
         for(int i = 0; i < col; i++){
-            matrix[loc][i] /= d;
+            matrix[pivRow][i] *= scalar;
         }
 
         // make the values above the pivot = 0
-        while (cur >= 0){
-            float x = matrix[cur][pivot];
+        while (curRow >= 0){
+            float x = matrix[curRow][pivot];
 
             for(int i = 0; i < col; i++){
-                matrix[cur][i] = matrix[cur][i] - (x * matrix[loc][i]); 
+                matrix[curRow][i] = matrix[curRow][i] - (x * matrix[pivRow][i]); 
             }
-
-            cur--;
+            curRow--;
         }
     }
     printMatrix(matrix);
