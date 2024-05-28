@@ -92,17 +92,17 @@ void echelonForm(std::vector<std::vector<float>> &matrix){
             }
         }
 
-        // if no pivot is found in this row or the first entry is zero, 
+        // if the row is all zero or the first entry is zero, 
         // move row to the end of the matrix
         if (pivot == EMPTY || firstZero){
             matrix.push_back(matrix[i]);
             matrix.erase(matrix.begin() + i);
-            i--; // backtrack to the previous row 
+            // i--; // backtrack to the previous row 
 
             continue;
         }
         // make all columns under the pivot = 0
-        // keep track of the curRowrent row and the row of the pivot
+        // keep track of the current row and the row of the pivot
         int loc = i;
         int curRow = i+1;
 
@@ -115,7 +115,6 @@ void echelonForm(std::vector<std::vector<float>> &matrix){
                     matrix[curRow][i] = matrix[curRow][i] - (x * matrix[loc][i]);
                 }
             }
-            std::cout << "flag ";
             curRow++;
         }
     }
