@@ -182,6 +182,6 @@ void reducedForm(std::vector<std::vector<float>> &matrix){
             }
             curRow--;
         }
-    printMatrix(matrix);
     }
+    printMatrix(matrix);
 }
