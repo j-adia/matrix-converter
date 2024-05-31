@@ -7,22 +7,12 @@ TESTING
   following format: (examples under test cases/)
 
 matrix.txt
---------------------
-Number of rows
-Number of columns
-Entries of row 1
-Entries of row 2
-...
-Entries of row n
---------------------
-
-EXECUTION
-* To run code, enter into the terminal:
-  g++ matrix.cpp -o matrix
-  ./matrix "filename.txt"
-=======
-- To run your own test cases, create a .txt file with the 
-  proper format: (samples under test cases/)
+* Number of rows
+* Number of columns
+* Entries of row 1
+* Entries of row 2
+* ...
+* Entries of row n
 
 EXECUTION
 - To run code, enter into the terminal:
