@@ -20,3 +20,11 @@ EXECUTION
 * To run code, enter into the terminal:
   g++ matrix.cpp -o matrix
   ./matrix "filename.txt"
+=======
+- To run your own test cases, create a .txt file with the 
+  proper format: (samples under test cases/)
+
+EXECUTION
+- To run code, enter into the terminal:
+g++ matrix.cpp -o matrix
+./matrix "filename.txt"
