@@ -6,21 +6,26 @@
 // flag for empty row
 #define EMPTY -8000000
 
-// -~- prototypes -~-
+// -~- helper function prototypes -~-
 void printMatrix(std::vector<std::vector<float>> &matrix);
 void echelonForm(std::vector<std::vector<float>> &matrix);
 void reducedForm(std::vector<std::vector<float>> &matrix);
-void findVariables(std::vector<std::vector<float>> &matrix);
+bool emptyFile(std::ifstream &file);
 
 int main(int argc, char * argv[]){
     if (argc < 1){
-        std::cout << "No filename entered";
+        std::cout << "File Error: No filename entered.";
         return -1;
     }
 
     std::ifstream input(argv[1], std::ios_base::in);
     if (!input.is_open()){
-        std::cout << "Error opening file.";
+        std::cout << "File Error: Can't open file.";
+        return -1;
+    }
+
+    if (emptyFile(input)){
+        std::cout << "File Error: Text file is empty.";
         return -1;
     }
 
@@ -31,12 +36,15 @@ int main(int argc, char * argv[]){
     std::vector<std::vector<float>> equationSet;
 
     // create the matrix
+    int countRow, countCol = 0; // variables used to check if the input is in the correct format.
     for (int i = 0; i < rows; i++){
         std::vector<float> equation;
         float val;
+        countCol = 0;
 
         while(input >> val){
             equation.push_back(val);
+            countCol++;
 
             if (input.peek() == '\n'){
                 break;
@@ -44,6 +52,15 @@ int main(int argc, char * argv[]){
         }
 
         equationSet.push_back(equation);
+        countRow++;
+    }
+    
+    // Handle bad inputs.
+    if (countRow != rows || countCol != cols){
+        std::cout << "Input Error: " << "the number of columns and rows entered do not match the "
+        << rows << "x" << cols << " matrix. Please check your input file.";
+
+        return -1;
     }
 
     std::cout << "\noriginal matrix:\n";
@@ -52,6 +69,10 @@ int main(int argc, char * argv[]){
     reducedForm(equationSet);
 
     return 0;
+}
+
+bool emptyFile(std::ifstream &file){
+    return (file.peek() == EOF);
 }
 
 void printMatrix(std::vector<std::vector<float>> &matrix){
@@ -161,6 +182,6 @@ void reducedForm(std::vector<std::vector<float>> &matrix){
             }
             curRow--;
         }
-    }
     printMatrix(matrix);
+    }
 }
