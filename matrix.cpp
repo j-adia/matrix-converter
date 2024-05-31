@@ -6,20 +6,26 @@
 // flag for empty row
 #define EMPTY -8000000
 
-// -~- prototypes -~-
+// -~- helper function prototypes -~-
 void printMatrix(std::vector<std::vector<float>> &matrix);
 void echelonForm(std::vector<std::vector<float>> &matrix);
 void reducedForm(std::vector<std::vector<float>> &matrix);
+bool emptyFile(std::ifstream &file);
 
 int main(int argc, char * argv[]){
     if (argc < 1){
-        std::cout << "No filename entered";
+        std::cout << "File Error: No filename entered.";
         return -1;
     }
 
     std::ifstream input(argv[1], std::ios_base::in);
     if (!input.is_open()){
-        std::cout << "Error opening file.";
+        std::cout << "File Error: Can't open file.";
+        return -1;
+    }
+
+    if (emptyFile(input)){
+        std::cout << "File Error: Text file is empty.";
         return -1;
     }
 
@@ -30,18 +36,31 @@ int main(int argc, char * argv[]){
     std::vector<std::vector<float>> equationSet;
 
     // create the matrix
+    int countRow, countCol = 0; // variables used to check if the input is in the correct format.
     for (int i = 0; i < rows; i++){
         std::vector<float> equation;
         float val;
+        countCol = 0;
 
         while(input >> val){
             equation.push_back(val);
+            countCol++;
 
-            if (input.peek() == '\n')
+            if (input.peek() == '\n'){
                 break;
+            }
         }
 
         equationSet.push_back(equation);
+        countRow++;
+    }
+    
+    // Handle bad inputs.
+    if (countRow != rows || countCol != cols){
+        std::cout << "Input Error: " << "the number of columns and rows entered do not match the "
+        << rows << "x" << cols << " matrix. Please check your input file.";
+
+        return -1;
     }
 
     std::cout << "\noriginal matrix:\n";
@@ -52,20 +71,27 @@ int main(int argc, char * argv[]){
     return 0;
 }
 
+bool emptyFile(std::ifstream &file){
+    return (file.peek() == EOF);
+}
+
 void printMatrix(std::vector<std::vector<float>> &matrix){
     int rows = matrix.size();
     int cols = matrix[0].size(); 
     
     for (int i = 0; i < rows; i++){
-        for (int j = 0; j < cols; j++)
-            std::cout << std::fixed << std::setprecision(2) << std::setw(9)  << std::right << matrix[i][j];
+        for (int j = 0; j < cols; j++){
+            if (matrix[i][j] == -0) // make -0 print 0 (number formatting preference)
+                matrix[i][j] = 0;
 
+            std::cout << std::fixed << std::setprecision(2) << std::setw(9)  << std::right << matrix[i][j];
+        }
         std::cout << "\n";
     }
 }
 
 void echelonForm(std::vector<std::vector<float>> &matrix){
-    std::cout << "\n echelon form:\n";
+    std::cout << "\nechelon form:\n";
     int row, col;
     row = matrix.size();
     col = matrix[0].size();
@@ -87,30 +113,30 @@ void echelonForm(std::vector<std::vector<float>> &matrix){
             }
         }
 
-        // if no pivot is found in this row or the first entry is zero, 
+        // if the row is all zero or the first entry is zero, 
         // move row to the end of the matrix
         if (pivot == EMPTY || firstZero){
             matrix.push_back(matrix[i]);
             matrix.erase(matrix.begin() + i);
-            i--; // backtrack to the previous row 
+            // i--; // backtrack to the previous row 
 
             continue;
         }
         // make all columns under the pivot = 0
         // keep track of the current row and the row of the pivot
         int loc = i;
-        int cur = i+1;
+        int curRow = i+1;
 
-        while (cur < row){
+        while (curRow < row){
             // x is the value to use in the row replacement operation
-            if (matrix[cur][pivot] != 0){
-                float x = (matrix[cur][pivot] / matrix[loc][pivot]);
+            if (matrix[curRow][pivot] != 0){
+                float x = (matrix[curRow][pivot] / matrix[loc][pivot]);
 
                 for(int i = 0; i < col; i++){
-                    matrix[cur][i] = matrix[cur][i] - (x * matrix[loc][i]);
+                    matrix[curRow][i] = matrix[curRow][i] - (x * matrix[loc][i]);
                 }
-            }  
-            cur++;
+            }
+            curRow++;
         }
     }
     printMatrix(matrix);
@@ -138,33 +164,24 @@ void reducedForm(std::vector<std::vector<float>> &matrix){
             continue;
         }
 
-        int loc = i;
-        int cur = i-1;
-        float d;
-        
-        // d is the scalar used to make the pivot 1 (which is 1/pivot)
-        if (matrix[loc][pivot] < 0){
-            d = matrix[loc][pivot];
-        }
-        else {
-            d = abs(matrix[loc][pivot]);
-        }
+        int pivRow = i;
+        int curRow = i-1;
+        float scalar = 1/(matrix[pivRow][pivot]);
 
-        // divide every value in the same row by the scalar
+        // multiply every value in the same row as the pivot by the scalar
         for(int i = 0; i < col; i++){
-            matrix[loc][i] /= d;
+            matrix[pivRow][i] *= scalar;
         }
 
         // make the values above the pivot = 0
-        while (cur >= 0){
-            float x = matrix[cur][pivot];
+        while (curRow >= 0){
+            float x = matrix[curRow][pivot];
 
             for(int i = 0; i < col; i++){
-                matrix[cur][i] = matrix[cur][i] - (x * matrix[loc][i]); 
+                matrix[curRow][i] = matrix[curRow][i] - (x * matrix[pivRow][i]); 
             }
-
-            cur--;
+            curRow--;
         }
-    }
     printMatrix(matrix);
+    }
 }
